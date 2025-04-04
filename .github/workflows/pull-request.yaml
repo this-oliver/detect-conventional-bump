@@ -1,0 +1,28 @@
+name: Pull Request Reviewer
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+    branches: [main]
+
+jobs:
+  check-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Pull Request Title
+        env:
+          # seem .commitlint for more details
+          BUMP_MAJOR: 'major|breaking'
+          BUMP_MINOR: 'minor|feat|ft'
+          BUMP_PATCH: 'patch|fix|docs|chore'
+          PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          BUMP_TYPES="$BUMP_MAJOR|$BUMP_MINOR|$BUMP_PATCH"
+
+          echo "::notice ::Checking for Conventional Commit Format in Pull Request Title: \"$PULL_REQUEST_TITLE\""
+
+          # check that pr follows `<type>(<scope>): <description>` format
+          if [[ ! $PULL_REQUEST_TITLE =~ ^($BUMP_TYPES)(\([a-zA-Z0-9_-]+\))?: ]]; then
+            echo "::error ::Invalid Pull Request Title: Pull Request Title does not follow the conventional commit format of \`<type>(<scope?>): <description>\`. The type must be one of the following: $BUMP_TYPES."
+            exit 1
+          fi
