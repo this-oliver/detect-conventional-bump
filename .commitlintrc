@@ -13,8 +13,9 @@
         "feat",
         "ft",
         "patch",
-        "chore",
+        "bug",
         "fix",
+        "chore",
         "docs"
       ]
     ]

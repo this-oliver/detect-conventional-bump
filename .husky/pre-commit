@@ -1,1 +1,26 @@
+#!/bin/env bash
+
+# Run linting
 pnpm lint-staged
+
+# Run tests
+pnpm test
+
+# Rebuild the project
+pnpm build
+
+# Exit with an error if the staged files include any files from /src 
+# but not from /dist
+STAGED_FILES=$(git diff --cached --name-only)
+if [[ $STAGED_FILES == *"src"* && $STAGED_FILES != *"dist"* ]]; then
+  echo -e "\033[31mStaged files include changes in /src but not in /dist. Please stage the changes and try again.\033[0m"
+  exit 1
+fi
+
+# Exit with an error if the build produces any changes in the 
+# /dist directory that are not staged
+BUILD_RESULTS=$(git diff --name-only -- dist)
+if [ -n "$BUILD_RESULTS" ]; then
+  echo -e "\033[31mBuild produced changes in the /dist directory that are not staged. Please stage the changes and try again.\033[0m"
+  exit 1
+fi

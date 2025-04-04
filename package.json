@@ -1,26 +1,39 @@
 {
-  "name": "template-node",
-  "version": "1.0.0",
+  "name": "detect-conventional-bump",
+  "type": "module",
+  "version": "0.0.0",
   "packageManager": "pnpm@10.6.0",
   "description": "a template for node (ts and js) projects",
   "author": "this-oliver",
+  "license": "MIT",
   "main": "dist/index.js",
   "engines": {
-    "node": ">=23.8.0"
+    "node": ">=23"
   },
   "scripts": {
-    "build": "rm -rf dist && tsc",
+    "test": "mocha",
+    "build": "npx rollup --config rollup.config.ts",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prepare": "husky"
+  },
+  "dependencies": {
+    "@actions/core": "^1.11.1"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.11.0",
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "@types/mocha": "^10.0.10",
     "eslint": "^9.23.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.0",
+    "mocha": "^11.1.0",
+    "rollup": "^4.39.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.2"
   },
   "lint-staged": {
