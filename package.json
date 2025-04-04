@@ -9,7 +9,7 @@
     "node": ">=23.8.0"
   },
   "scripts": {
-    "build": "rm -rf dist && tsc",
+    "build": "rm -rf dist && npx rollup --config rollup.config.ts",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prepare": "husky"
@@ -18,9 +18,13 @@
     "@antfu/eslint-config": "^4.11.0",
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-typescript": "^12.1.2",
     "eslint": "^9.23.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.0",
+    "rollup": "^4.39.0",
     "typescript": "^5.8.2"
   },
   "lint-staged": {

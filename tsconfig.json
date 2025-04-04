@@ -1,13 +1,11 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "target": "es2016",
-    "module": "commonjs",
-    "strict": true,
-    "outDir": "./dist",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "./dist"
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", ".github", ".husky", ".vscode"]
+  "include": ["src"],
+  "exclude": ["__fixtures__", "__tests__", "dist", "node_modules"]
 }

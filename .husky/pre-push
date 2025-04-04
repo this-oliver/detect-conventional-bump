@@ -1,1 +1,15 @@
+#!/bin/env bash
+
 pnpm commitlint --config .commitlintrc --from=HEAD~1 --to=HEAD
+
+# block pushes directly to main branch
+PROTECTED_BRANCHES=("main" "master")
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+for branch in "${PROTECTED_BRANCHES[@]}"; do
+  if [[ "$CURRENT_BRANCH" == "$branch" ]]; then
+    echo "You are trying to push to the protected branch '$branch'."
+    echo "Please create a new branch and push your changes there."
+    exit 1
+  fi
+done
