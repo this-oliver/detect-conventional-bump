@@ -1,7 +1,6 @@
 {
   "name": "detect-conventional-bump",
   "type": "module",
-  "version": "0.0.0",
   "packageManager": "pnpm@10.6.0",
   "description": "a template for node (ts and js) projects",
   "author": "this-oliver",
