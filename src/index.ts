@@ -1,6 +1,8 @@
-function main(): void {
-  // eslint-disable-next-line no-console
-  console.log("Hello, World!");
-}
+/**
+ * The entrypoint for the action. This file simply imports and runs the action's
+ * main logic.
+ */
+import { run } from "./logic.js";
 
-main();
+/* istanbul ignore next */
+run();

@@ -1,0 +1,35 @@
+name: detect-conventional-bump
+description: Detects the type of bump for a given message based on conventional commit standards.
+author: this-oliver
+
+# Add your action's branding here. This will appear on the GitHub Marketplace.
+branding:
+  icon: power
+  color: black
+
+# Define your inputs here.
+inputs:
+  message:
+    description: The message to analyze.
+    required: true
+  keywords-major:
+    description: Keywords that indicate a major bump separated by commas. Case insensitive.
+    required: false
+    default: 'major, breaking'
+  keywords-minor:
+    description: Keywords that indicate a minor bump separated by commas. Case insensitive.
+    required: false
+    default: 'minor, feat, ft'
+  keywords-patch:
+    description: Keywords that indicate a patch bump separated by commas. Case insensitive.
+    required: false
+    default: 'patch, fix, chore, docs'
+
+# Define your outputs here.
+outputs:
+  type:
+    description: The type of bump detected (major, minor, patch).
+
+runs:
+  using: node20
+  main: dist/index.js
