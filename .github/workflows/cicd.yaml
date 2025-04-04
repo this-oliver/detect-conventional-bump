@@ -7,20 +7,25 @@ on:
     branches: [main]
 
 jobs:
-  check-lint:
+  check-quality:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
 
       - uses: actions/setup-node@v4
         with:
           node-version-file: package.json
 
       - name: Install Dependencies
-        run: npm install
+        run: pnpm install
 
       - name: Lint
-        run: npm run lint
+        run: pnpm run lint
+
+      - name: Test
+        run: pnpm run test
 
   check-security:
     runs-on: ubuntu-latest
@@ -49,7 +54,7 @@ jobs:
           exit-code: '1'
 
   release:
-    needs: [check-lint, check-security]
+    needs: [check-quality, check-security]
     runs-on: ubuntu-latest
     permissions:
       contents: write # needs write permission to push tag and release
@@ -59,40 +64,14 @@ jobs:
       - name: Set bump type
         id: bump
         env:
-          # seem .commitlint for more details
-          BUMP_MAJOR: 'major|breaking'
-          BUMP_MINOR: 'minor|feat|ft'
-          BUMP_PATCH: 'patch|fix|docs|chore'
           # set commit header as pr title if event is pull_request otherwise use latest commit message
           COMMIT_HEADER: ${{ github.event_name == 'pull_request' && github.event.pull_request.title || github.event.head_commit.message }}
-        run: |
-          BUMP_TYPES="$BUMP_MAJOR|$BUMP_MINOR|$BUMP_PATCH"
-
-          # only get the first line of the commit message
-          COMMIT_HEADER=$(echo "$COMMIT_HEADER" | head -n 1)
-
-          echo "::notice ::Calculating bump type based on commit header..."
-          echo "::notice ::Commit Header: \"$COMMIT_HEADER\""
-
-          # check that pr follows `<type>(<scope>): <description>` format
-          if [[ ! $COMMIT_HEADER =~ ^($BUMP_TYPES)(\([a-zA-Z0-9_-]+\))?: ]]; then
-            echo "::error ::Invalid Commit Header: Commit Header does not follow the conventional commit format of \`<type>(<scope?>): <description>\`."
-            echo "::error ::Valid <type>: $BUMP_TYPES"
-            echo "::error ::Tip: <scope> is optional."
-            exit 1
-          fi
-
-          # set bump based on commit header
-          if [[ $COMMIT_HEADER =~ ^($BUMP_MAJOR)(\([a-zA-Z0-9_-]+\))?: ]]; then
-            BUMP='major'
-          elif [[ $COMMIT_HEADER =~ ^($BUMP_MINOR)(\([a-zA-Z0-9_-]+\))?: ]]; then
-            BUMP='minor'
-          else
-            BUMP='patch'
-          fi
-
-          echo "::notice ::Setting bump type: $BUMP"
-          echo "type=$BUMP" >> $GITHUB_OUTPUT
+        uses: ./
+        with:
+          message: ${{ env.COMMIT_HEADER }}
+          keywords-major: 'major, breaking'
+          keywords-minor: 'minor, feat, ft'
+          keywords-patch: 'patch, fix, chore, docs'
 
       - name: Bump version and push tag (dry-run)
         uses: mathieudutour/github-tag-action@a22cf08638b34d5badda920f9daf6e72c477b07b # v6.2

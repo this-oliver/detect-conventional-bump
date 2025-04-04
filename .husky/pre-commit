@@ -1,7 +1,10 @@
 #!/bin/env bash
 
-# Run lint-staged
+# Run linting
 pnpm lint-staged
+
+# Run tests
+pnpm test
 
 # Rebuild the project
 pnpm build
