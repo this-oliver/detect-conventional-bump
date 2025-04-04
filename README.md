@@ -4,7 +4,9 @@
 
 `detect-conventional-bump` is a GitHub Action that uses the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) standard to determine the type of version bump (`major`, `minor`, `patch`) based on the given [input parameters](#input-parameters). It is designed to be used in CI/CD pipelines to automate versioning and release processes.
 
-```
+The following commit message format is used to determine the bump type ([source](https://github.com/angular/angular/blob/9228a733631a7d3ba79456c7b2da6e6ff239d4cb/contributing-docs/commit-message-guidelines.md#commit-message-header)):
+
+```md
 <type>(<scope?>): <short summary>
   │       │             │
   │       │             └─⫸ Summary in present tense. Not capitalized. No period at the end.
