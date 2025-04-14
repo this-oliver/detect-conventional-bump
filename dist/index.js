@@ -27253,17 +27253,17 @@ const DEFAULT_PATCH = ["patch", "fix", "chore", "docs"];
 /**
  * Returns a regex that matches the conventional commit message pattern `<type>(<scope?>): <description>`.
  */
-function getConventionalRegex(types) {
-    return new RegExp(`^(${types.join("|")})(\\(.*\\))?:\\s`);
+function getConventionalRegex(config) {
+    return new RegExp(`^(${config.types.join("|")})(\\((${config.scopes && config.scopes.length > 0 ? config.scopes.join("|") : ".*"})\\))${config.forceScope === true ? "{1}" : "{0,1}"}:\\s`);
 }
 /**
  * Returns the bump type based on the commit message and the keywords for major, minor, and patch using
  * the conventional commit message pattern.
  */
 function getBumpType(message, major, minor, patch) {
-    const majorRegex = getConventionalRegex(major);
-    const minorRegex = getConventionalRegex(minor);
-    const patchRegex = getConventionalRegex(patch);
+    const majorRegex = getConventionalRegex({ types: major });
+    const minorRegex = getConventionalRegex({ types: minor });
+    const patchRegex = getConventionalRegex({ types: patch });
     if (majorRegex.test(message)) {
         return "major";
     }
@@ -27285,20 +27285,24 @@ async function run() {
         const majorKeywords = coreExports.getInput("keywords-major");
         const minorKeywords = coreExports.getInput("keywords-minor");
         const patchKeywords = coreExports.getInput("keywords-patch");
+        const scopeKeywords = coreExports.getInput("keywords-scope");
+        const forceScope = coreExports.getInput("force-scope") === "true";
         // parse keywords
         const major = majorKeywords ? majorKeywords.split(",").map(s => s.trim()) : DEFAULT_MAJOR;
         const minor = minorKeywords ? minorKeywords.split(",").map(s => s.trim()) : DEFAULT_MINOR;
         const patch = patchKeywords ? patchKeywords.split(",").map(s => s.trim()) : DEFAULT_PATCH;
+        const scopes = scopeKeywords ? scopeKeywords.split(",").map(s => s.trim()) : undefined;
         // log inputs
         coreExports.debug(`Message: ${message}`);
         coreExports.debug(`Major keywords: ${major}`);
         coreExports.debug(`Minor keywords: ${minor}`);
         coreExports.debug(`Patch keywords: ${patch}`);
+        coreExports.debug(`Scope keywords: ${scopes}`);
         // generate regex
         coreExports.debug("Generating regex ...");
-        const regex = getConventionalRegex([...major, ...minor, ...patch]);
+        const regex = getConventionalRegex({ types: [...major, ...minor, ...patch], scopes, forceScope });
         // check if message matches regex
-        coreExports.debug("Checking if message matches regex ...");
+        coreExports.debug(`Checking if message matches regex '${regex}' ...`);
         if (!regex.test(message)) {
             throw new Error(`The message "${message}" does not match the conventional commit message pattern '${CONVENTIONAL_PATTERN}'`);
         }

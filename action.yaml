@@ -24,6 +24,13 @@ inputs:
     description: Keywords that indicate a patch bump separated by commas. Case insensitive.
     required: false
     default: 'patch, fix, chore, docs'
+  keyword-scopes:
+    description: Comma-separated list of keywords that the scope should be checked against - if value is empty, the scope will not be checked. Case insensitive.
+    required: false
+  force-scope:
+    description: Boolean value to fail if the scope is not in the message.
+    required: false
+    default: 'false'
 
 # Define your outputs here.
 outputs:

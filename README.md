@@ -68,6 +68,7 @@ jobs:
 | `keywords-major` | `major,breaking,release` | No | Comma-separated list of keywords that indicate a major version bump. |
 | `keywords-minor` | `minor,feat,ft` | No | Comma-separated list of keywords that indicate a minor version bump. |
 | `keywords-patch` | `patch,fix,chore,docs` | No | Comma-separated list of keywords that indicate a patch version bump. |
+| `force-scope` | `false` | No | Fails if the message does not contain a scope. |
 
 ### Output Parameters
 

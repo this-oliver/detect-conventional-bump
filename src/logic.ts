@@ -10,8 +10,8 @@ const DEFAULT_PATCH = ["patch", "fix", "chore", "docs"];
 /**
  * Returns a regex that matches the conventional commit message pattern `<type>(<scope?>): <description>`.
  */
-export function getConventionalRegex(types: string[]): RegExp {
-  return new RegExp(`^(${types.join("|")})(\\(.*\\))?:\\s`);
+export function getConventionalRegex(config: { types: string[], scopes?: string[], forceScope?: boolean }): RegExp {
+  return new RegExp(`^(${config.types.join("|")})(\\((${config.scopes && config.scopes.length > 0 ? config.scopes.join("|") : ".*"})\\))${config.forceScope === true ? "{1}" : "{0,1}"}:\\s`);
 }
 
 /**
@@ -19,9 +19,9 @@ export function getConventionalRegex(types: string[]): RegExp {
  * the conventional commit message pattern.
  */
 export function getBumpType(message: string, major: string[], minor: string[], patch: string[]): BumpType {
-  const majorRegex = getConventionalRegex(major);
-  const minorRegex = getConventionalRegex(minor);
-  const patchRegex = getConventionalRegex(patch);
+  const majorRegex = getConventionalRegex({ types: major });
+  const minorRegex = getConventionalRegex({ types: minor });
+  const patchRegex = getConventionalRegex({ types: patch });
 
   if (majorRegex.test(message)) {
     return "major";
@@ -44,24 +44,28 @@ export async function run(): Promise<void> {
     const majorKeywords: string = core.getInput("keywords-major");
     const minorKeywords: string = core.getInput("keywords-minor");
     const patchKeywords: string = core.getInput("keywords-patch");
+    const scopeKeywords: string = core.getInput("keywords-scope");
+    const forceScope: boolean = core.getInput("force-scope") === "true";
 
     // parse keywords
     const major: string[] = majorKeywords ? majorKeywords.split(",").map(s => s.trim()) : DEFAULT_MAJOR;
     const minor: string[] = minorKeywords ? minorKeywords.split(",").map(s => s.trim()) : DEFAULT_MINOR;
     const patch: string[] = patchKeywords ? patchKeywords.split(",").map(s => s.trim()) : DEFAULT_PATCH;
+    const scopes: string[] | undefined = scopeKeywords ? scopeKeywords.split(",").map(s => s.trim()) : undefined;
 
     // log inputs
     core.debug(`Message: ${message}`);
     core.debug(`Major keywords: ${major}`);
     core.debug(`Minor keywords: ${minor}`);
     core.debug(`Patch keywords: ${patch}`);
+    core.debug(`Scope keywords: ${scopes}`);
 
     // generate regex
     core.debug("Generating regex ...");
-    const regex = getConventionalRegex([...major, ...minor, ...patch]);
+    const regex = getConventionalRegex({ types: [...major, ...minor, ...patch], scopes, forceScope });
 
     // check if message matches regex
-    core.debug("Checking if message matches regex ...");
+    core.debug(`Checking if message matches regex '${regex}' ...`);
     if (!regex.test(message)) {
       throw new Error(`The message "${message}" does not match the conventional commit message pattern '${CONVENTIONAL_PATTERN}'`);
     }
