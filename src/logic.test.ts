@@ -1,33 +1,83 @@
 import { strictEqual, throws } from "node:assert";
 import { getBumpType, getConventionalRegex } from "./logic.ts";
 
-describe("conventional Commit Regex Tests", () => {
+describe("conventional commit regex tests", () => {
   describe("getConventionalRegex()", () => {
-    it("should return a regex that matches conventional commit messages", () => {
+    it("should return a regex that matches with messages that have the specified types", () => {
       const types = ["feat", "fix", "chore"];
-      const regex = getConventionalRegex(types);
-      const testMessages = [
+      const regex = getConventionalRegex({ types });
+
+      const validMessages = [
         "feat: add new feature",
         "fix(scope): fix a bug",
         "chore: update dependencies"
       ];
 
-      testMessages.forEach((message) => {
-        strictEqual(regex.test(message), true, `Should match '${message}'`);
+      validMessages.forEach((message) => {
+        strictEqual(regex.test(message), true, `Should match '${message}' with regex '${regex}'`);
+      });
+
+      const invalidMessages = [
+        "update documentation",
+        "style = format code",
+        "test; add tests"
+      ];
+
+      invalidMessages.forEach((message) => {
+        strictEqual(regex.test(message), false, `Should not match '${message}' with regex '${regex}'`);
       });
     });
 
-    it("should not match non-conventional commit messages", () => {
+    it("should return a regex that matches with messages that have the specified scopes or no scope", () => {
       const types = ["feat", "fix", "chore"];
-      const regex = getConventionalRegex(types);
-      const nonMatchingMessages = [
-        "update README",
-        "add new feature",
-        "fix bug"
+      const scopes = ["scope1", "scope2"];
+      const regex = getConventionalRegex({ types, scopes });
+
+      const validMessages = [
+        "feat: add new feature",
+        "feat(scope1): add new feature",
+        "fix(scope2): fix a bug",
+        "chore(scope1): update dependencies"
       ];
 
-      nonMatchingMessages.forEach((message) => {
-        strictEqual(regex.test(message), false, `Should not match '${message}'`);
+      validMessages.forEach((message) => {
+        strictEqual(regex.test(message), true, `Should match '${message}' with regex '${regex}'`);
+      });
+
+      const invalidMessages = [
+        "feat(invalid-scope): add new feature",
+        "fix(invalid-scope): fix a bug",
+        "chore(invalid-scope): update dependencies"
+      ];
+
+      invalidMessages.forEach((message) => {
+        strictEqual(regex.test(message), false, `Should not match '${message}' with regex '${regex}'`);
+      });
+    });
+
+    it("should return a regex that fails when the scope is not in the message and forceScope is true", () => {
+      const types = ["feat", "fix", "chore"];
+      const scopes = ["scope1", "scope2"];
+      const regex = getConventionalRegex({ types, scopes, forceScope: true });
+
+      const validMessages = [
+        "feat(scope1): add new feature",
+        "fix(scope2): fix a bug",
+        "chore(scope1): update dependencies"
+      ];
+
+      validMessages.forEach((message) => {
+        strictEqual(regex.test(message), true, `Should match '${message}' with regex '${regex}'`);
+      });
+
+      const invalidMessages = [
+        "feat: add new feature",
+        "fix: fix a bug",
+        "chore: update dependencies"
+      ];
+
+      invalidMessages.forEach((message) => {
+        strictEqual(regex.test(message), false, `Should not match '${message}' with regex '${regex}'`);
       });
     });
   });

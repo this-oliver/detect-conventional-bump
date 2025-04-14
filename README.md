@@ -68,6 +68,8 @@ jobs:
 | `keywords-major` | `major, breaking, release` | No | The keywords that indicate a major version bump. |
 | `keywords-minor` | `minor, feat, ft` | No | The keywords that indicate a minor version bump. |
 | `keywords-patch` | `patch, fix, chore, docs` | No | The keywords that indicate a patch version bump. |
+| `keywords-scope` | - | No | Comma-separated list of keywords that the scope must contain. If not provided, the scope can be anything. |
+| `force-scope` | `false` | No | Fails if the message does not contain a scope. |
 
 ### Output Parameters
 
